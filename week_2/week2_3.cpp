@@ -1,55 +1,28 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
+class Solution {
+    public:
+        int minSwapsCouples(vector<int>& row) {
+            int n = row.size();
+            vector<int> pos(n);
 
-struct Record {
-    std::string name;
-    int english;
-    int math;
-    int science;
-};
+            for (int i = 0; i < n; ++i) {
+                pos[row[i]] = i;
+            }
+    
+            int swaps = 0;
 
-void writeToCSV(const std::string& filename, const std::vector<Record>& records) {
-    std::ofstream file(filename);
+            for (int i = 0; i < n; i += 2) {
+                int partner = row[i] ^ 1;
+                
+                if (row[i + 1] != partner) {
+                    swaps++;
+                    int j = pos[partner];
 
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
-        return;
-    }
+                    swap(row[i + 1], row[j]);
 
-    file << "Name,English,Math,Science\n";
-
-    for (const auto& record : records) {
-        file << record.name << "," << record.english << "," << record.math << "," << record.science << "\n";
-    }
-
-    file.close();
-    std::cout << "Data written to " << filename << " successfully!" << std::endl;
-}
-
-int main() {
-    int n;
-    std::cout << "Enter the number of records: ";
-    std::cin >> n;
-
-    if (n <= 0) {
-        std::cerr << "Invalid number of records!" << std::endl;
-        return 1;
-    }
-
-    std::vector<Record> records;
-
-    for (int i = 0; i < n; ++i) {
-        Record record;
-        std::cout << "Enter details for record " << i + 1 << " (name english math science): ";
-        std::cin >> record.name >> record.english >> record.math >> record.science;
-        records.push_back(record);
-    }
-
-    std::string filename = "output.csv";
-
-    writeToCSV(filename, records);
-
-    return 0;
-}
+                    pos[row[j]] = j;
+                    pos[row[i + 1]] = i + 1;
+                }
+            }
+            return swaps;
+        }
+    };
